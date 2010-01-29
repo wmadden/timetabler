@@ -73,7 +73,7 @@ module Timetabler
     # Searches for a solution.
     # 
     def rec_backtracking_search
-      return @assignment if assignment_complete?
+      return @assignments if assignment_complete?
       
       variable = select_unassigned_variable()
       values = order_domain_values( variable )
