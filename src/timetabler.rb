@@ -34,24 +34,29 @@
 #      time => [ subject_name, event_name ]
 #    }
 #   
-def search( subjects, timetable )
+def search( subjects )
   
-  # Succeed when all subjects are accommodated
-  return timetable if subjects.length == 0
+  # Initialize a timetable problem and attempt to solve it.
+  variables = Hash.new { |hash, key| hash[key] = [] }
   
-  # Take the first subject, search for streams that fit the current timetable
-  subject = subjects.first
-  
-  # 
-  for event in events
-    for stream in streams
+  subjects.each_pair do | subject, events |
+    events.each_pair do | event, streams |
+    #  for stream in streams
+    #    for time in stream
+    #      variables[ time ] = [subject, event]
+    #    end
+    #  end
+      
+      variables[ [subject, event] ] = streams
     end
   end
   
+  problem = TimetableProblem.new( variables )
+  problem.solve!
 end
 
 # Test
-search ({  "Computer Design" => {
+puts search({  "Computer Design" => {
     "Lecture" => [
       # Stream 1
       [ [:Monday, 9], [:Wednesday, 9], [:Friday, 9] ],
@@ -61,4 +66,4 @@ search ({  "Computer Design" => {
       [ [:Monday, 13], [:Wednesday, 13], [:Friday, 13] ]
     ]
   }
-})
+}).inspect

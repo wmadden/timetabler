@@ -15,52 +15,51 @@ module Timetabler
   # 
   class CSProblem
     
-    
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     #  
     #  Constructor
     #  
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     
     # 
     # Takes as parameters a hash of variable identifiers to arrays of values
     # they may take and an array of constraints that must be satisfied, as
     # Procs.
     # 
-    def init( variables, constraints )
+    def init( variables, constraints, assignments = nil )
       @variables = variables || {}
       @constraints = constraints || []
-      @assignments = {}
+      @assignments = assignments || {}
     end
     
     
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     #  
     #  Properties
     #  
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     
   public
     
     attr_reader :assignments
     
     
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     #  
     #  Methods
     #  
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     
   public
     
     #------------------------------
-    #  solve
+    #  solve!
     #------------------------------
     
     # 
     # Wrapper function for rec_backtracking_search.
     # 
-    def solve
+    def solve!
       rec_backtracking_search
     end
     
@@ -80,10 +79,10 @@ module Timetabler
       values = order_domain_values( variable )
       
       for value in values do
-        @assignments[ variable ] = value
+        assign( variable, value )
         
         if not constraints_satisfied?
-          @assignments.delete( variable )
+          unassign( variable )
           next
         end
         
@@ -91,7 +90,7 @@ module Timetabler
         
         return result unless result.nil? # Success, return immediately
         
-        @assignments.delete( variable )
+        unassign( variable )
       end
       
       # Failure, return nil
@@ -141,7 +140,7 @@ module Timetabler
       result = true
       
       for constraint in @constraints
-        result = result and constraint.call( @variables )
+        result = result and constraint.call( @variables, @assignments )
       end
       
       result
@@ -156,6 +155,28 @@ module Timetabler
     # 
     def assignment_complete?
       @assignment.length == @variables.length
+    end
+    
+    #------------------------------
+    #  assign
+    #------------------------------
+    
+    # 
+    # Assigns value to variable.
+    # 
+    def assign( variable, value )
+      @assignments[ variable ] = value
+    end
+    
+    #------------------------------
+    #  unassign
+    #------------------------------
+    
+    # 
+    # Unassigns variable.
+    # 
+    def unassign( variable )
+      @assignments.delete( variable )
     end
     
   end # END CLASS
