@@ -13,6 +13,11 @@ module Timetabler
   # Adapted from the algorithm in "Artificial Intelligence, A Modern
   # Approach" (Russel, Norvig).
   # 
+  # This implementation is modeled on a recursive depth-first search. Openings
+  # have been left for heuristics to be added, which should speed up the search.
+  # Worst case scenario (no solution) will still require searching all available
+  # combinations.
+  # 
   class CSProblem
     
     #---------------------------------------------------------------------------

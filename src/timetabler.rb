@@ -11,7 +11,7 @@ include Timetabler
 #   {
 #     subject_name => {
 #       event_name => [
-#         [ times ]
+#         streams
 #       ]
 #     }
 #   }
@@ -34,7 +34,7 @@ include Timetabler
 #  Upon success, the function will return a timetable as a hash, in the form
 #  
 #    {
-#      time => [ subject_name, event_name ]
+#      [ subject_name, event_name ] => stream
 #    }
 #   
 def search( subjects )
@@ -55,7 +55,7 @@ def search( subjects )
   end
   
   problem = TimetableProblem.new( variables )
-  problem.solve!
+  problem.solve! # I love this line
 end
 
 # Test
