@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "Timetabler/TimetableProblem"
 
 # 
 # Search for a valid timetable given subject times.
@@ -56,7 +57,8 @@ def search( subjects )
 end
 
 # Test
-puts search({  "Computer Design" => {
+puts search({
+  "Computer Design" => {
     "Lecture" => [
       # Stream 1
       [ [:Monday, 9], [:Wednesday, 9], [:Friday, 9] ],
@@ -67,3 +69,4 @@ puts search({  "Computer Design" => {
     ]
   }
 }).inspect
+
