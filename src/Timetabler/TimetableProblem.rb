@@ -4,14 +4,14 @@
 # 
 # William Madden, 29/01/10
 
-require "CSProblem"
+require "Timetabler/CSProblem"
 
 module Timetabler
 
   # 
   # Implements a simple subclass of CSProblem used with timetables.
   # 
-  class TimetableProblem
+  class TimetableProblem < CSProblem
     
     #---------------------------------------------------------------------------
     #  
@@ -19,7 +19,7 @@ module Timetabler
     #  
     #---------------------------------------------------------------------------
     
-    def init( variables )
+    def initialize( variables )
       super( variables, constraints )
     end
     
@@ -37,7 +37,7 @@ module Timetabler
     #------------------------------
     
     def constraints
-      [ Kernel.proc | variables, assignments | do
+      [ Kernel.proc do | variables, assignments |
           # Ensure that no two events occupy the same time slot.
           
           # We can achieve this using almost entirely core functions by

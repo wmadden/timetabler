@@ -2,6 +2,8 @@
 
 require "Timetabler/TimetableProblem"
 
+include Timetabler
+
 # 
 # Search for a valid timetable given subject times.
 # Subjects must be an hash in the form:

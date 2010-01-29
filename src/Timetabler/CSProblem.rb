@@ -26,7 +26,7 @@ module Timetabler
     # they may take and an array of constraints that must be satisfied, as
     # Procs.
     # 
-    def init( variables, constraints, assignments = nil )
+    def initialize( variables, constraints, assignments = nil )
       @variables = variables || {}
       @constraints = constraints || []
       @assignments = assignments || {}
@@ -86,7 +86,7 @@ module Timetabler
           next
         end
         
-        result = recursive_backtracking_search
+        result = rec_backtracking_search
         
         return result unless result.nil? # Success, return immediately
         
@@ -109,8 +109,8 @@ module Timetabler
       
       # Choose first unassigned var
       variables = @variables.keys
-      for variable in variables do
-        break unless assignment.has_key( variable )
+      for variable in variables
+        break unless @assignments.has_key?( variable )
       end
       
       variable
@@ -154,7 +154,7 @@ module Timetabler
     # Returns true if all variables have been assigned values, otherwise false.
     # 
     def assignment_complete?
-      @assignment.length == @variables.length
+      @assignments.length == @variables.length
     end
     
     #------------------------------
