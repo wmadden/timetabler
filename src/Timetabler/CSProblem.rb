@@ -73,6 +73,7 @@ module Timetabler
     # Searches for a solution.
     # 
     def rec_backtracking_search
+      
       return @assignments if assignment_complete?
       
       variable = select_unassigned_variable()
@@ -140,7 +141,7 @@ module Timetabler
       result = true
       
       for constraint in @constraints
-        result = result and constraint.call( @variables, @assignments )
+        result = result && constraint.call( @variables, @assignments )
       end
       
       result

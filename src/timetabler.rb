@@ -61,7 +61,17 @@ end
 # Test
 puts search({
   "Computer Design" => {
-    "Lecture" => [
+    "L1" => [
+      # Stream 1
+      [ [:Monday, 9], [:Wednesday, 9], [:Friday, 9] ],
+      # Stream 2
+      [ [:Monday, 11], [:Wednesday, 11], [:Friday, 11] ],
+      # Stream 2
+      [ [:Monday, 13], [:Wednesday, 13], [:Friday, 13] ]
+    ]
+  },
+  "Data on the Web" => {
+    "L1" => [
       # Stream 1
       [ [:Monday, 9], [:Wednesday, 9], [:Friday, 9] ],
       # Stream 2

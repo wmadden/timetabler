@@ -44,7 +44,10 @@ module Timetabler
           # flattening the assignments and checking for duplicates. This will
           # only occur if two streams have been selected which include at least
           # one of the same time slots.
-          flat = assignments.values.flatten
+          flat = []
+          assignments.each_value do |value|
+            flat.concat( value )
+          end
           
           flat.length - flat.uniq.length == 0
         end ]
