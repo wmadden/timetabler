@@ -1,0 +1,11 @@
+
+Timetabler
+
+Simple constraint-satistfaction problem solver, with a specialized implementation for solving timetable problems.
+
+timetabler.rb         - Executable script to solve a sample problem.
+Timetabler/
+  CSProblem.rb        - Defines the base CSProblem class, which represents a
+                        constraint-satisfaction problem and implements a basic
+                        backtracking algorithm to solve it.
+  TimetableProblem.rb - A specialized form of CSP.
