@@ -80,5 +80,26 @@ for line in lines do
 end
 
 # Test
-puts search(subjects).inspect
+timetable = search(subjects)
+
+if timetable.nil?
+  puts "No timetable could be found without subjects clashing."
+else
+  # Pretty print timetable
+  ordered_hash = {}
+  timetable.each_pair do | event, stream |
+    ordered_hash[ event[0] ] ||= {}
+    ordered_hash[ event[0] ][ event[1] ] = stream
+  end
+  timetable = ordered_hash
+  timetable.each_pair do | subject, events |
+    puts "\n#{subject}"
+    events.each_pair do | event, stream |
+      puts "  #{event}"
+      for time in stream do
+        puts "    #{time}"
+      end
+    end
+  end
+end
 
