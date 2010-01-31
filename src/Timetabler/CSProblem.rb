@@ -52,6 +52,7 @@ module Timetabler
     
     attr_reader :assignments
     
+    
     #---------------------------------------------------------------------------
     #  
     #  Methods

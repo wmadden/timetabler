@@ -122,8 +122,32 @@ module Timetabler
     #------------------------------
     
     def value
-      # TODO
       result = @assignments.length
+      
+      @assignments.each_pair do |variable, value|
+        # If it's in the morning, add 1
+        morning = true
+        for time in value
+          # Parse time
+          /[a-zA-Z]+\s*([\d]):[\d]+[amp]+ - ([\d]):[\d]+[amp]+/ === time
+          start = $1; finish = $2
+          
+          # If time is in morning
+          if start.to_i > 12
+            morning = false
+            break
+          end
+        end
+        
+        if morning
+          result += 2
+        else
+          result -= 2
+        end
+      end
+      
+      puts result
+      result
     end
     
   end
