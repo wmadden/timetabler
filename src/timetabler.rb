@@ -83,10 +83,12 @@ end
 timetable = search(subjects)
 
 if timetable.nil?
-  puts "No timetable could be found without subjects clashing."
+  puts "No solution."
 else
   # Pretty print timetable
   ordered_hash = {}
+  puts " Result ="
+  puts timetable.inspect
   timetable.each_pair do | event, stream |
     ordered_hash[ event[0] ] ||= {}
     ordered_hash[ event[0] ][ event[1] ] = stream

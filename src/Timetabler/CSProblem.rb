@@ -31,10 +31,12 @@ module Timetabler
     # they may take and an array of constraints that must be satisfied, as
     # Procs.
     # 
-    def initialize( variables, constraints, assignments = nil )
-      @variables = variables || {}
-      @constraints = constraints || []
-      @assignments = assignments || {}
+    def initialize( variables, constraints, assignments = nil, fringe = nil )
+      @variables = variables || @variables || {}
+      @constraints = constraints || @constraints || []
+      @assignments = assignments || @assignments || {}
+      
+      @fringe = fringe || @fringe || []
     end
     
     
@@ -62,13 +64,48 @@ module Timetabler
     #------------------------------
     
     # 
-    # Wrapper function for rec_backtracking_search.
+    # Wrapper for search implementations.
     # 
     def solve!
-      rec_backtracking_search
+      #rec_backtracking_search
+      iterative_search( @variables, @assignments )
     end
     
   private
+    
+    #------------------------------
+    #  iterative_search
+    #------------------------------
+    
+    def iterative_search( variables, assignments )
+      
+      state = [ nil, variables, assignments ]
+      # Value state
+      state[0] = value_state( state )
+      
+      # TODO: check this (we're ignoring @fringe...?)
+      fringe = [ state ]
+      
+      # Note: keep fringe ordered
+      puts fringe.inspect
+      unless fringe.empty? || goal_state?( state )
+        # Generate successor states
+        successors = get_successors( state )
+        puts "Successors = "
+        puts successors.inspect
+        
+        # Add to fringe; order fringe
+        fringe.push( successors )
+        fringe.sort! { |a, b| a[0] <=> b[0] }
+        puts
+        puts fringe.inspect
+        
+        # Take last (highest-value) state in fringe
+        state = fringe.pop
+      end
+      
+      # state
+    end
     
     #------------------------------
     #  rec_backtracking_search
@@ -79,15 +116,15 @@ module Timetabler
     # 
     def rec_backtracking_search
       
-      return @assignments if assignment_complete?
+      return @assignments if assignment_complete?( @assignments, @variables )
       
-      variable = select_unassigned_variable()
+      variable = select_unassigned_variable( @variables, @assignments )
       values = order_domain_values( variable )
       
       for value in values do
         assign( variable, value )
         
-        if not constraints_satisfied?
+        if not constraints_satisfied?( @variables, @assignments, @constraints )
           unassign( variable )
           next
         end
@@ -110,13 +147,13 @@ module Timetabler
     # 
     # Chooses a variable to assign next.
     # 
-    def select_unassigned_variable
+    def select_unassigned_variable( variables, assignments )
       # TODO: heuristic
       
       # Choose first unassigned var
-      variables = @variables.keys
-      for variable in variables
-        break unless @assignments.has_key?( variable )
+      for variable in variables.keys
+        break unless assignments.has_key?( variable )
+        variable = nil
       end
       
       variable
@@ -142,11 +179,11 @@ module Timetabler
     # 
     # Returns true if all constraints are satisfied, otherwise false.
     # 
-    def constraints_satisfied?
+    def constraints_satisfied?( variables, assignments, constraints )
       result = true
       
-      for constraint in @constraints
-        result = result && constraint.call( @variables, @assignments )
+      for constraint in constraints
+        result = result && constraint.call( variables, assignments )
       end
       
       result
@@ -159,8 +196,20 @@ module Timetabler
     # 
     # Returns true if all variables have been assigned values, otherwise false.
     # 
-    def assignment_complete?
-      @assignments.length == @variables.length
+    def assignment_complete?( assignments, variables )
+      assignments.length == variables.length
+    end
+    
+    #------------------------------
+    #  goal_state?
+    #------------------------------
+    
+    # 
+    # Returns true if the given state is a goal state (i.e. complete timetable).
+    # 
+    def goal_state?( state )
+      assignments = state[1]; variables = state[2]
+      assignment_complete?( assignments, variables )
     end
     
     #------------------------------
@@ -183,6 +232,56 @@ module Timetabler
     # 
     def unassign( variable )
       @assignments.delete( variable )
+    end
+    
+    #------------------------------
+    #  get_successors
+    #------------------------------
+    
+    # 
+    # Returns a list of successors to `state'.
+    # 
+    def get_successors( state )
+      value = state[0]; assignments = state[1]; variables = state[2]
+      successors = []
+      
+      variable = select_unassigned_variable( variables, assignments )
+      unless variable.nil?
+        domain = variables[ variable ]
+        variables = variables.delete( variable )
+        
+        # Generate successors by assigning to variable
+        for d_value in domain
+          # Assign value
+          s_assignments = {}
+          s_assignments[variable] = d_value
+          
+          # Test constraints on successor
+          next unless constraints_satisfied?( variables, assignments,
+            constraints )
+          
+          # Calculate value of successor
+          successor = [ s_value, variables, s_assignments ]
+          s_value = value_state( successor )
+          
+          successors.push( successor )
+        end
+        
+        # Remove variable; choose the next one
+        variable = select_unassigned_variable( variables, assignments )
+      end
+    end
+    
+    #------------------------------
+    #  value_state
+    #------------------------------
+    
+    # 
+    # Returns the numerical value of a state.
+    # 
+    def value_state( state )
+      assignments = state[2]
+      value = assignments.length
     end
     
   end # END CLASS
