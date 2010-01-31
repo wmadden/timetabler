@@ -4,6 +4,8 @@
 # 
 # William Madden, 29/01/10
 
+require "Timetabler/State"
+
 module Timetabler
 
   # 
@@ -50,7 +52,6 @@ module Timetabler
     
     attr_reader :assignments
     
-    
     #---------------------------------------------------------------------------
     #  
     #  Methods
@@ -79,32 +80,23 @@ module Timetabler
     
     def iterative_search( variables, assignments )
       
-      state = [ nil, variables, assignments ]
-      # Value state
-      state[0] = value_state( state )
+      fringe = [ State.new(variables, assignments, self) ]
       
-      # TODO: check this (we're ignoring @fringe...?)
-      fringe = [ state ]
-      
-      # Note: keep fringe ordered
-      puts fringe.inspect
-      unless fringe.empty? || goal_state?( state )
-        # Generate successor states
-        successors = get_successors( state )
-        puts "Successors = "
-        puts successors.inspect
-        
-        # Add to fringe; order fringe
-        fringe.push( successors )
-        fringe.sort! { |a, b| a[0] <=> b[0] }
-        puts
-        puts fringe.inspect
-        
-        # Take last (highest-value) state in fringe
+      unless fringe.empty?
         state = fringe.pop
+        
+        # Success, return immediately
+        return state if goal_state?( state )
+        
+        # Add successors to fringe
+        fringe.push( state.successors )
+        
+        # Order fringe
+        fringe.sort! { |a, b| a.value <=> b.value }
       end
       
-      # state
+      # Failure, return nil
+      nil
     end
     
     #------------------------------
@@ -208,8 +200,7 @@ module Timetabler
     # Returns true if the given state is a goal state (i.e. complete timetable).
     # 
     def goal_state?( state )
-      assignments = state[1]; variables = state[2]
-      assignment_complete?( assignments, variables )
+      assignment_complete?( state.assignments, state.variables )
     end
     
     #------------------------------
@@ -232,44 +223,6 @@ module Timetabler
     # 
     def unassign( variable )
       @assignments.delete( variable )
-    end
-    
-    #------------------------------
-    #  get_successors
-    #------------------------------
-    
-    # 
-    # Returns a list of successors to `state'.
-    # 
-    def get_successors( state )
-      value = state[0]; assignments = state[1]; variables = state[2]
-      successors = []
-      
-      variable = select_unassigned_variable( variables, assignments )
-      unless variable.nil?
-        domain = variables[ variable ]
-        variables = variables.delete( variable )
-        
-        # Generate successors by assigning to variable
-        for d_value in domain
-          # Assign value
-          s_assignments = {}
-          s_assignments[variable] = d_value
-          
-          # Test constraints on successor
-          next unless constraints_satisfied?( variables, assignments,
-            constraints )
-          
-          # Calculate value of successor
-          successor = [ s_value, variables, s_assignments ]
-          s_value = value_state( successor )
-          
-          successors.push( successor )
-        end
-        
-        # Remove variable; choose the next one
-        variable = select_unassigned_variable( variables, assignments )
-      end
     end
     
     #------------------------------
