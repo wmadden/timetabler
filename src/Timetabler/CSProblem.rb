@@ -72,6 +72,23 @@ module Timetabler
       iterative_search( @variables, @assignments )
     end
     
+    #------------------------------
+    #  constraints_satisfied?
+    #------------------------------
+    
+    # 
+    # Returns true if all constraints are satisfied, otherwise false.
+    # 
+    def constraints_satisfied?( variables, assignments )
+      result = true
+      
+      for constraint in @constraints
+        result = result && constraint.call( variables, assignments )
+      end
+      
+      result
+    end
+    
   private
     
     #------------------------------
@@ -82,14 +99,15 @@ module Timetabler
       
       fringe = [ State.new(variables, assignments, self) ]
       
-      unless fringe.empty?
+      while not fringe.empty?
         state = fringe.pop
         
         # Success, return immediately
-        return state if goal_state?( state )
+        return state.assignments if goal_state?( state )
         
         # Add successors to fringe
-        fringe.push( state.successors )
+        successors = state.successors
+        fringe.concat( successors )
         
         # Order fringe
         fringe.sort! { |a, b| a.value <=> b.value }
@@ -165,23 +183,6 @@ module Timetabler
     end
     
     #------------------------------
-    #  constraints_satisfied?
-    #------------------------------
-    
-    # 
-    # Returns true if all constraints are satisfied, otherwise false.
-    # 
-    def constraints_satisfied?( variables, assignments, constraints )
-      result = true
-      
-      for constraint in constraints
-        result = result && constraint.call( variables, assignments )
-      end
-      
-      result
-    end
-    
-    #------------------------------
     #  assignment_complete?
     #------------------------------
     
@@ -189,7 +190,7 @@ module Timetabler
     # Returns true if all variables have been assigned values, otherwise false.
     # 
     def assignment_complete?( assignments, variables )
-      assignments.length == variables.length
+      assignments.length == @variables.length
     end
     
     #------------------------------

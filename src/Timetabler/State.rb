@@ -36,7 +36,9 @@ module Timetabler
         variable = pair[0]
         domain = pair[1]
         
-        if domain.length == 1 then assign( variable, domain[0] )
+        if domain.length == 1
+          assign( variable, domain[0] )
+        end
       end
     end
     
@@ -75,12 +77,12 @@ module Timetabler
         # Generate successors by assigning to variable
         for value in domain
           # Create the successor state
-          state = State.new( @variables, @assignments, @problem )
+          successor = State.new( @variables, @assignments, @problem )
           # Assign the variable
-          state.assign( variable, value )
+          successor.assign( variable, value )
           
           # Test constraints on successor
-          next if not state.constraints_satisfied?
+          next if not successor.constraints_satisfied?
           
           result.push( successor )
         end
@@ -112,13 +114,7 @@ module Timetabler
       end
       
       # Test problem constraints
-      result = true
-      
-      for constraint in @problem.constraints
-        result = result && constraint.call( variables, assignments )
-      end
-      
-      result
+      @problem.constraints_satisfied?( @variables, @assignments )
     end
     
     #------------------------------
@@ -127,7 +123,7 @@ module Timetabler
     
     def value
       # TODO
-      return @assignments.length
+      result = @assignments.length
     end
     
   end
