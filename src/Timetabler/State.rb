@@ -32,10 +32,7 @@ module Timetabler
       @problem = problem
       
       # Check for single-value variables
-      @variables.each_pair do |pair|
-        variable = pair[0]
-        domain = pair[1]
-        
+      @variables.each_pair do |variable, domain|
         if domain.length == 1
           assign( variable, domain[0] )
         end
@@ -70,10 +67,7 @@ module Timetabler
     def successors
       result = []
       
-      @variables.each_pair do |pair|
-        variable = pair[0]
-        domain = pair[1]
-        
+      @variables.each_pair do |variable, domain|
         # Generate successors by assigning to variable
         for value in domain
           # Create the successor state
@@ -146,7 +140,7 @@ module Timetabler
         end
       end
       
-      puts result
+      #puts result
       result
     end
     
