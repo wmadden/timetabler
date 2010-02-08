@@ -124,6 +124,9 @@ module Timetabler
     def value
       result = @assignments.length
       
+      # Added by Will, redo this later to use real values instead of parsing the
+      # string
+      return result
       @assignments.each_pair do |variable, value|
         # If it's in the morning, add 1
         morning = true
